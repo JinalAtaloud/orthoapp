@@ -16,7 +16,7 @@ public class OrthoappVideoService {
 		this.videoRepository = videoRepository;
 	}
 
-	public Videos retrieveSpecificTrainingVideo(Long id, Long language_id) {
+	public Videos retrieveSpecificTrainingVideo(String id, String language_id) {
 		
 		return videoRepository.findById(id).isPresent() ? videoRepository.findById(id).get(): null;
 
@@ -28,7 +28,7 @@ public class OrthoappVideoService {
 		
 	}
 
-	public Videos getTrainingVideoById(Long id) {
+	public Videos getTrainingVideoById(String id) {
 		return videoRepository.findById(id).isPresent() ? videoRepository.findById(id).get(): null;
 	}
 
@@ -36,8 +36,10 @@ public class OrthoappVideoService {
 		return videoRepository.findByFileName(filename);
 	}
 	
+	//TODO
+	
 	public void updateTrainingVideo(Videos trainingVideo) {
-		 videoRepository.updateVideoDetails(trainingVideo.getId(), trainingVideo.getLastModifiedDate());
+		 videoRepository.save(trainingVideo);
 		
 	}
 			

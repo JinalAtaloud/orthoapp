@@ -3,18 +3,18 @@ package com.springboot.application.orthoapp.dto;
 import com.springboot.application.orthoapp.model.SyllableType;
 
 public class SyllableDto {
-	private Long id;
-	private Integer imageId;
+	private String id;
+	private String imageId;
 	private String imageObjectUrl;
-	private Long languageId;
-	private Integer userId;
+	private String languageId;
+	private String userId;
 	private SyllableType syllableType;
 
 	public SyllableDto() {
 		
 	}
 	
-	public SyllableDto(Long id, Integer imageId, String imageObjectUrl, Long languageId, Integer userId,SyllableType syllableType) {
+	public SyllableDto(String id, String imageId, String imageObjectUrl, String languageId, String userId,SyllableType syllableType) {
 		super();
 		this.id = id;
 		this.imageId = imageId;
@@ -24,19 +24,19 @@ public class SyllableDto {
 		this.syllableType=syllableType;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setId(String string) {
+		this.id = string;
 	}
 
-	public Integer getImageId() {
+	public String getImageId() {
 		return imageId;
 	}
 
-	public void setImageId(Integer imageId) {
+	public void setImageId(String imageId) {
 		this.imageId = imageId;
 	}
 
@@ -48,19 +48,19 @@ public class SyllableDto {
 		this.imageObjectUrl = imageObjectUrl;
 	}
 
-	public Long getLanguageId() {
+	public String getLanguageId() {
 		return languageId;
 	}
 
-	public void setLanguageId(Long languageId) {
+	public void setLanguageId(String languageId) {
 		this.languageId = languageId;
 	}
 
-	public Integer getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	

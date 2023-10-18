@@ -1,36 +1,24 @@
 package com.springboot.application.orthoapp.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.springboot.application.orthoapp.user.User;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import org.springframework.data.annotation.Id;
 
-@Entity
+@Document(collection="syllable")
 public class Syllable {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Long id;
+	private String id;
 
-	@JsonIgnoreProperties("syllable")
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="image_id", referencedColumnName= "id")
+	@DBRef
 	private Images image;
 
-	@JsonIgnoreProperties("syllable")
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="user_id", referencedColumnName= "id")
+	@DBRef
 	private User user;
 
-	@Enumerated(EnumType.STRING)
 	private SyllableType syallableType;
 
 	
@@ -38,18 +26,18 @@ public class Syllable {
 		
 	}
 
-	public Syllable(Long id, Images image, User user, SyllableType syallableType) {
+	public Syllable(String id, Images image, User user, SyllableType syallableType) {
 		this.id = id;
 		this.image = image;
 		this.user = user;
 		this.syallableType = syallableType;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

@@ -1,35 +1,24 @@
 package com.springboot.application.orthoapp.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import org.springframework.data.annotation.Id;
 
-@Entity
+@Document(collection="video")
 public class Videos {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Long id;
+	private String id;
 	private String fileUrl;
 	private String title;
 	private String description;
 	private String lastModifiedDate;
 	private String fileName;
 	
-	@JsonIgnoreProperties("videos")
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="language_id", referencedColumnName= "id")
+	@DBRef
 	private Languages language;
-
-
 	
-
 	public Languages getLanguage() {
 		return language;
 	}
@@ -45,7 +34,7 @@ public class Videos {
 	}
 	
 
-	public Videos(Long id, String fileUrl, String title, String description, String lastModifiedDate,
+	public Videos(String id, String fileUrl, String title, String description, String lastModifiedDate,
 			String fileName, Languages language) {
 		super();
 		this.id = id;
@@ -61,11 +50,11 @@ public class Videos {
 
 
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

@@ -23,7 +23,7 @@ public class OrthoappUserService {
 
 
 
-	public User getId(Integer user_id) {
+	public User getId(String user_id) {
 		return userRepository.findById(user_id).isPresent() ? userRepository.findById(user_id).get(): null;
 	}	
 }

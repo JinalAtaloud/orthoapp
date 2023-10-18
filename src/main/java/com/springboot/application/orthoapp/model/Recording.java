@@ -1,55 +1,38 @@
 package com.springboot.application.orthoapp.model;
 
-import java.util.Date;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
-@Entity
+@Document(collection="recording")
 public class Recording {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Long id;
+	private String id;
 	private String fileObjectUrl;
 	private String filename;
-	private Date createdDate;
+	private String createdDate;
 
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JsonIgnoreProperties(value = { "referenceList", "handler", "hibernateLazyInitializer" }, allowSetters = true)
-	@JoinColumn(name = "language_id", referencedColumnName = "id")
-	private Languages language;
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JsonIgnoreProperties(value = { "referenceList", "handler", "hibernateLazyInitializer" }, allowSetters = true)
-	@JoinColumn(name = "image_id", referencedColumnName = "id")
+	@DBRef
 	private Images image;
 
 	public Recording() {
 	}
 
-	public Recording(Long id, String fileObjectUrl, String filename, Date createdDate, Languages language,
+	public Recording(String id, String fileObjectUrl, String filename, String createdDate,
 			Images image) {
 		this.id = id;
 		this.fileObjectUrl = fileObjectUrl;
 		this.filename = filename;
 		this.createdDate = createdDate;
-		this.language = language;
 		this.image = image;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -69,20 +52,12 @@ public class Recording {
 		this.filename = filename;
 	}
 
-	public Date getCreatedDate() {
+	public String getCreatedDate() {
 		return createdDate;
 	}
 
-	public void setCreatedDate(Date date) {
+	public void setCreatedDate(String date) {
 		this.createdDate = date;
-	}
-
-	public Languages getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(Languages language) {
-		this.language = language;
 	}
 
 	public Images getImage() {

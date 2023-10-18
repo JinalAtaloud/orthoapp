@@ -16,7 +16,7 @@ public class OrthoappImageService {
 		this.imageRepository = imageRepository;
 	}
 
-	public Images retrieveSpecificImage(Integer id) {
+	public Images retrieveSpecificImage(String id) {
 		return imageRepository.findById(id).isPresent() ? imageRepository.findById(id).get() : null;
 
 	}
@@ -26,7 +26,7 @@ public class OrthoappImageService {
 		
 	}
 
-	public Images getImageById(Integer id) {
+	public Images getImageById(String id) {
 		return imageRepository.findById(id).isPresent() ? imageRepository.findById(id).get() : null;
 		
 	}

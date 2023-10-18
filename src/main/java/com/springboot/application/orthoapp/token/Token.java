@@ -1,15 +1,11 @@
 package com.springboot.application.orthoapp.token;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.springboot.application.orthoapp.user.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,24 +17,20 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Document(collection="token")
 public class Token {
 	
 	@Id
-	@GeneratedValue
-	private Integer id;
+	private String id;
 	
 	private String token;
 	
-	@Enumerated(EnumType.STRING)
 	private TokenType tokenType;
 	
 	private Boolean expired;
 	private Boolean revoked;
 	
-	@JsonIgnoreProperties("token")
-	@ManyToOne()
-	@JoinColumn(name = "user_id")
+	@DBRef
 	private User user;
 	
 	

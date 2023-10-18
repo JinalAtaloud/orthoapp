@@ -51,8 +51,8 @@ public class SyllableController {
 
 	@PostMapping("/countSyllable") public ResponseEntity<SyllableType> countSyllable(@RequestBody Map<String, Object> requestMap) throws Exception{
 		Syllable syllable = new Syllable();
-		Integer image_id=(Integer)requestMap.get("image_id");
-		Integer user_id = (Integer)requestMap.get("user_id");
+		String image_id=(String) requestMap.get("image_id");
+		String user_id = (String)requestMap.get("user_id");
 		int tapCount = (int) requestMap.get("tap_count");
 		
 		if(image_id==null) {

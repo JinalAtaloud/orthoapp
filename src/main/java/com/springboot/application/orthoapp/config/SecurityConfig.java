@@ -58,6 +58,7 @@ public class SecurityConfig {
 		            .requestMatchers(mvc.pattern(HttpMethod.POST,"/api/v1/record/**")).permitAll()
 		            .requestMatchers(mvc.pattern(HttpMethod.POST,"/api/v1/syllable/**")).permitAll()
 		            .requestMatchers(mvc.pattern(HttpMethod.GET,"/api/v1/syllable/**")).permitAll()
+		            .requestMatchers(mvc.pattern(HttpMethod.POST,"/api/v1/recording/**")).permitAll()
 		            
 		            .requestMatchers(mvc.pattern("/api/v1/video/**")).hasRole(ADMIN.name())
 		            .requestMatchers(mvc.pattern(HttpMethod.POST,"/api/v1/video/**")).hasAuthority(ADMIN_CREATE.name())

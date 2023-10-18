@@ -3,20 +3,14 @@ package com.springboot.application.orthoapp.user;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.springboot.application.orthoapp.token.Token;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,24 +22,20 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Document(collection="user")
 public class User implements UserDetails {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Integer id;
+	private String id;
 	
 	private String firstname;
 	private String lastname;
 	private String email;
 	private String password;
 	
-	@Enumerated(EnumType.STRING)
-	//Created role
 	private Role role;
 	
-	@JsonIgnoreProperties("user")
-	@OneToMany(mappedBy="user")
+	@DBRef
 	private List<Token> tokens;
 	
 	@Override

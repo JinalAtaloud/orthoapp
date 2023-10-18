@@ -2,42 +2,43 @@ package com.springboot.application.orthoapp.model;
 
 import java.util.Map;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
+@Document(collection="language")
 public class Languages {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Long id;
+	private String id;
 	private String language;
+	//private String spokenLanguage;
+	//private String symbolFileUrl;
+	//private String symbolFilename;
 	private String code;
-
-
-	@ElementCollection
 	private Map<String,String> data;
 	
 	public Languages() {
 		
 	}
 
-	public Languages(Long id, String language, String code,Map<String, String> data) {
+
+	public Languages(String id, String language,String code, Map<String, String> data) {
 		super();
 		this.id = id;
 		this.language = language;
-		this.code=code;
+//		this.spokenLanguage = spokenLanguage;
+//		this.symbolFileUrl = symbolFileUrl;
+//		this.symbolFilename = symbolFilename;
+		this.code = code;
 		this.data = data;
 	}
 
-	public Long getId() {
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -65,10 +66,44 @@ public class Languages {
 		this.code = code;
 	}
 
+	
+//	public String getSpokenLanguage() {
+//		return spokenLanguage;
+//	}
+//
+//
+//	public void setSpokenLanguage(String spokenLanguage) {
+//		this.spokenLanguage = spokenLanguage;
+//	}
+//
+//
+//	public String getSymbolFileUrl() {
+//		return symbolFileUrl;
+//	}
+//
+//
+//	public void setSymbolFileUrl(String symbolFileUrl) {
+//		this.symbolFileUrl = symbolFileUrl;
+//	}
+//
+//
+//	public String getSymbolFilename() {
+//		return symbolFilename;
+//	}
+//
+//
+//	public void setSymbolFilename(String symbolFilename) {
+//		this.symbolFilename = symbolFilename;
+//	}
+
+
 	@Override
 	public String toString() {
-		return "Languages [id=" + id + ", language=" + language + ", data=" + data + "]";
+		return "Languages [id=" + id + ", language=" + language + ", spokenLanguage="  + ", code=" + code
+				+ ", data=" + data + "]";
 	}
+
+
 	
 	
 	

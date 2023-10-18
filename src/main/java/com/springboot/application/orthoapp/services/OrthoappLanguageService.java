@@ -26,12 +26,14 @@ public class OrthoappLanguageService {
 		
 	}
 
-	public Languages getLanguageById(Integer id) {
+	public Languages getLanguageById(String id) {
 		return languageRepository.findById(id).isPresent() ? languageRepository.findById(id).get(): null;
 	}
 
+
+	//TODO
 	public void updateLanguage(Languages languageModel) {
-		languageRepository.updateLanguage(languageModel.getId(), languageModel.getLanguage());
+		languageRepository.save(languageModel);
 		
 	}
 	

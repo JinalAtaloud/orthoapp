@@ -7,12 +7,17 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Base64;
 import java.util.List;
 
 import javax.sound.sampled.AudioInputStream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -24,64 +29,45 @@ import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.S3Object;
-
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectResult;
-
-import jakarta.annotation.Resource;
+import software.amazon.awssdk.utils.IoUtils;
 
 @Component
 public class S3Util {
 
-	private static final String BUCKET = "orthoapp-bucket-v1";
+	private static final String BUCKET = "ortho2";
 	private static final String REGION = "ap-south-1";
+	private final S3Client s3Client;
+	
+	@Autowired
+	public S3Util(S3Client s3Client) {
+		super();
+		this.s3Client = s3Client;
+	}
 
-	@Value("${audio.files.temp.location}") 
-	private static String templateLocation;
 
-	public static void uploadFile(String filename, InputStream inputStream)
+	public void uploadFile(String filename, InputStream inputStream)
 			throws S3Exception, AwsServiceException, SdkClientException, IOException {
 		S3Client client = S3Client.builder().build();
-		System.out.println("Inside upload file");
-
-		PutObjectRequest request = PutObjectRequest.builder().bucket(BUCKET).key(filename).acl("public-read").build();
-
-		System.out.println("before put");
+		PutObjectRequest request = PutObjectRequest.builder().bucket(BUCKET).key(filename).build();
 		client.putObject(request, RequestBody.fromInputStream(inputStream, inputStream.available()));
-		System.out.println("After put");
 	}
 	
-	public static void uploadAudioFile(String filename, String filePathLocation)
-			throws S3Exception, AwsServiceException, SdkClientException, IOException {
-        S3Client client = S3Client.builder().build();
-         
-        PutObjectRequest request = PutObjectRequest.builder()
-                            .bucket(BUCKET).key(filename).acl("public-read").build();
-         
-        client.putObject(request, RequestBody.fromFile(new File(filePathLocation)));
-        
-	}
-	 
-
-	public static void deleteFile(String filename) {
-		S3Client client = S3Client.builder().build();
-		System.out.println("Filename:"+filename);
-		DeleteObjectRequest request = DeleteObjectRequest.builder().bucket(BUCKET).key(filename).build();
-
-		client.deleteObject(request);
-
-	}
 	
-	public static void updateFile(String filename,InputStream inputStream) throws S3Exception, AwsServiceException, SdkClientException, IOException {
+
+	public void deleteFile(String key) {
+		DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket(BUCKET).key(key).build();
+
+		s3Client.deleteObject(deleteObjectRequest);
+	}
+
+	
+	public  void updateFile(String filename,InputStream inputStream) throws S3Exception, AwsServiceException, SdkClientException, IOException {
 		deleteFile(filename);
 		uploadFile(filename,inputStream);
 		
 	}
 
-	public static LocalDateTime getLastModifiedDate(String filename) {
+	public LocalDateTime getLastModifiedDate(String filename) {
 		System.out.println("Inside glmd");
 		
 
@@ -105,10 +91,25 @@ public class S3Util {
 		return ldt;
 	}
 	
-	public static String createObjectUrl(String filename) {
+	public  String createObjectUrl(String filename) {
 		String objectURL = MessageFormat.format("https://{0}.s3.{1}.amazonaws.com/{2}",BUCKET,REGION,filename);
 		return objectURL;
 		
 	}
+	
+
+	public String getObject(String objectKey) throws IOException {
+		AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
+		com.amazonaws.services.s3.model.S3Object s3Object = s3Client.getObject(BUCKET,objectKey);
+		InputStream inputStream = s3Object.getObjectContent();
+		byte[] audioBytes = IoUtils.toByteArray(inputStream);
+		inputStream.close();
+		String base64Audio = Base64.getEncoder().encodeToString(audioBytes);
+		return base64Audio;
+		
+	}
+	
+	
+
 	
 }

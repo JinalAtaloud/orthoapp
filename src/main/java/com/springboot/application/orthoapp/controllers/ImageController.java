@@ -36,17 +36,19 @@ public class ImageController {
 	private OrthoappImageService orthoappImageService;
 	private LanguageRepository languageRepository;
 	private OrthoappLanguageService languageService;
+	private S3Util s3Util;
 
-	public ImageController(ImageRepository imageRepository, OrthoappImageService orthoappImageService,LanguageRepository languageRepository,OrthoappLanguageService languageService) {
+	public ImageController(ImageRepository imageRepository, OrthoappImageService orthoappImageService,LanguageRepository languageRepository,OrthoappLanguageService languageService,S3Util s3Util) {
 		super();
 		this.imageRepository = imageRepository;
 		this.orthoappImageService = orthoappImageService;
 		this.languageRepository=languageRepository;
 		this.languageService=languageService;
+		this.s3Util=s3Util;
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public ResponseEntity<Images> uploadFile(@RequestParam("file") MultipartFile multipartFile,@RequestParam("language_id")Integer language_id) throws Exception {
+	public ResponseEntity<Images> uploadFile(@RequestParam("file") MultipartFile multipartFile,@RequestParam("language_id")String language_id) throws Exception {
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		List<String> fileTypes = new ArrayList<>();
 		fileTypes.add("image/jpeg");
@@ -63,10 +65,10 @@ public class ImageController {
 			throw new DataNotFoundException("Language id doesn't exist");
 		}
 		try {
-			S3Util.uploadFile(fileName, multipartFile.getInputStream());
+			s3Util.uploadFile(fileName, multipartFile.getInputStream());
 			message = "Your file has been uploaded sucessfully";
 			Images response = new Images();
-			String fileObjectUrl = S3Util.createObjectUrl(fileName);
+			String fileObjectUrl = s3Util.createObjectUrl(fileName);
 			response.setFileName(fileName);
 			response.setFileUrl(fileObjectUrl);
 			response.setLanguage(language);
@@ -80,12 +82,12 @@ public class ImageController {
 	}
 
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<String> deleteVideo(@PathVariable("id") Integer id) {
+	public ResponseEntity<String> deleteVideo(@PathVariable("id") String id) {
 		Images image = orthoappImageService.getImageById(id);
 		if (image == null) {
 			throw new DataNotFoundException("The image doesn't exist with id - " + id);
 		} else {
-			S3Util.deleteFile(image.getFileName());
+			s3Util.deleteFile(image.getFileName());
 			imageRepository.deleteById(id);
 			message = "File deleted successfully!!";
 			return new ResponseEntity<>(message, HttpStatus.OK);
@@ -95,8 +97,8 @@ public class ImageController {
 
 	// get training video by id
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
-	public String getVideo(@PathVariable("id") Integer id,@RequestParam("language_id") Long language_id) {
-		if(language_id == null && language_id==0l){
+	public String getVideo(@PathVariable("id") String id,@RequestParam("language_id") Long language_id) {
+		if(language_id == null){
 			throw new DataNotFoundException("Language id is null");
 			
 		}

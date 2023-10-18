@@ -1,127 +1,77 @@
-//package com.springboot.application.orthoapp.controllers;
-//
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.PathVariable;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//import com.springboot.application.orthoapp.exceptions.DataNotFoundException;
-//import com.springboot.application.orthoapp.model.Images;
-//import com.springboot.application.orthoapp.model.Languages;
-//import com.springboot.application.orthoapp.model.Recording;
-//import com.springboot.application.orthoapp.repository.ImageRepository;
-//import com.springboot.application.orthoapp.repository.LanguageRepository;
-//import com.springboot.application.orthoapp.repository.RecordingRepository;
-//import com.springboot.application.orthoapp.s3util.S3Util;
-//import com.springboot.application.orthoapp.services.OrthoappImageService;
-//import com.springboot.application.orthoapp.services.OrthoappLanguageService;
-//import com.springboot.application.orthoapp.services.RecordingService;
-//
-//@RestController
-//@RequestMapping("api/v1/recordings")
-//public class RecordingController {
-//	
-//	private LanguageRepository languageRepository;
-//	private OrthoappLanguageService languageService;
-//	private ImageRepository imageRepository;
-//	private OrthoappImageService orthoappImageService;
-//	private RecordingService recordingService;
-//	private RecordingRepository repository;
-//	
-//	
-//
-//	public RecordingController(LanguageRepository languageRepository, OrthoappLanguageService languageService,
-//			ImageRepository imageRepository, OrthoappImageService orthoappImageService,RecordingRepository repository,RecordingService recordingService) {
-//		super();
-//		this.languageRepository = languageRepository;
-//		this.languageService = languageService;
-//		this.imageRepository = imageRepository;
-//		this.orthoappImageService = orthoappImageService;
-//		this.repository=repository;
-//		this.recordingService=recordingService;
-//	}
-//
-//
-//
-//	/*@RequestMapping(value = "/saveAudio", method = RequestMethod.POST)
-//	public ResponseEntity<String> saveAudio(@RequestParam("language_id") Long language_id,@RequestParam("image_id") Long image_id) {
-//		//check if language exists
-//		//language id should not be null
-//		//fetch image from id
-//		//record
-//		//save in S3 bucket
-//		
-//		Recording recording = new Recording();
-//		if(language_id==null) {
-//			throw new DataNotFoundException("Language id cannot be null");
-//		}
-//		
-//		LanguageModel language = languageService.getLanguageById(language_id);
-//		if(language==null) {
-//			throw new DataNotFoundException("Language id does not exists");
-//		}
-//		
-//		ImageModel image = orthoappImageService.getImageById(image_id);
-//		if(image==null) {
-//			throw new DataNotFoundException("Language id does not exists");
-//		}
-//		
-//		
-//		try {
-//		//System.out.println("recording.getId():"+recording.getId());
-//		RecordingUtil.saveRecording();
-//		
-//		recording.setFilename("Recording");
-//		recording.setImage(image);
-//		recording.setLanguage(language);
-//		
-//		
-//		
-//		}catch(Exception e) {
-//			System.out.println("Exception:{}"+e.getMessage());
-//		}
-//		
-//		return null;
-//	}*/
-//	
-//	@PostMapping("/start") public ResponseEntity<String> startRecording(@RequestParam("language_id") Integer language_id,@RequestParam("image_id") Long image_id){
-//		//Recording recording = new Recording();
-//		if(language_id==null) {
-//			throw new DataNotFoundException("Language id cannot be null");
-//		}
-//		
-//		Languages language = languageService.getLanguageById(language_id);
-//		if(language==null) {
-//			throw new DataNotFoundException("Language id does not exists");
-//		}
-//		
-//		Images image = orthoappImageService.getImageById(image_id);
-//		if(image==null) {
-//			throw new DataNotFoundException("Language id does not exists");
-//		}
-//		
-//		try {
-//			System.out.println("Started Recording");
-//			String filename = recordingService.startRecording(language,image);
-//			Recording recording = new Recording();
-//			recording.setFilename(filename);
-//			recording.setLanguage(language);
-//			recording.setImage(image);
-//			recording.setFileObjectUrl(S3Util.createObjectUrl(filename));
-//			recording.setCreatedDate(new java.util.Date());
-//			repository.save(recording);
-//		} catch (Exception e) {
-//			
-//			e.printStackTrace();
-//		}
-//		return ResponseEntity.ok("Recording...");
-//	}
-//	
-//	@PostMapping("/stop") public ResponseEntity<String> stopRecording() throws Exception{
-//		recordingService.stopRecording();
-//		return ResponseEntity.ok("Recording stopped and saved.");
-//	}
-//
-//}
+package com.springboot.application.orthoapp.controllers;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.springboot.application.orthoapp.exceptions.DataNotFoundException;
+import com.springboot.application.orthoapp.model.Images;
+import com.springboot.application.orthoapp.model.Recording;
+import com.springboot.application.orthoapp.repository.RecordingRepository;
+import com.springboot.application.orthoapp.s3util.S3Util;
+import com.springboot.application.orthoapp.services.OrthoappImageService;
+
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+
+@RestController
+@RequestMapping("api/v1/recording")
+public class RecordingController {
+	
+	@Autowired
+	private S3Util s3Util;
+	private RecordingRepository recordingRepository;
+	private OrthoappImageService orthoappImageService;
+	private DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+	
+	
+	public RecordingController(S3Util s3Util,RecordingRepository recordingRepository,OrthoappImageService orthoappImageService) {
+		this.s3Util = s3Util;
+		this.recordingRepository=recordingRepository;
+		this.orthoappImageService=orthoappImageService;
+	}
+
+
+	@PostMapping("/upload/{image_id}") public ResponseEntity<String> uploadAudioFile(@RequestBody byte[] audioData,@PathVariable String image_id) throws S3Exception, AwsServiceException, SdkClientException, IOException{
+		Images image = orthoappImageService.getImageById(image_id);
+		if(image==null) {
+			throw new DataNotFoundException("Image id doesn't exist");
+		}
+		String objectKey = "audio-"+System.currentTimeMillis()+ ".wav";
+		Recording recording = new Recording();
+		InputStream inputStream = new ByteArrayInputStream(audioData);
+//		LocalDateTime lastModifiedDate = s3Util.getLastModifiedDate(objectKey);
+//		String formatDateTime = lastModifiedDate.format(format);
+		String fileObjectUrl = s3Util.createObjectUrl(objectKey);
+		s3Util.uploadFile(objectKey, inputStream);
+		recording.setFilename(objectKey);
+		//recording.setCreatedDate(formatDateTime);
+		recording.setFileObjectUrl(fileObjectUrl);
+		recording.setImage(image);
+		recordingRepository.save(recording);
+		return ResponseEntity.ok("Audio file uploaded!");
+		
+	}
+	
+	@GetMapping("/download/{objectKey}") public ResponseEntity<String> downloadAudioFileFromS3(@PathVariable String objectKey) throws IOException{
+		
+		String base64Audio = s3Util.getObject(objectKey);
+		return ResponseEntity.ok(base64Audio);
+		
+	}
+}
+
+

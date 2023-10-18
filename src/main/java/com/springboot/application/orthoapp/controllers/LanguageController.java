@@ -57,12 +57,14 @@ public class LanguageController {
 	}
 
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<String> deleteLanguage(@PathVariable("id") Integer id) {
+	public ResponseEntity<String> deleteLanguage(@PathVariable("id") String id) {
 		Languages languageModel = orthoappLanguageService.getLanguageById(id);
+		System.out.println("language:{}"+languageModel);
 		if (languageModel == null) {
 			throw new DataNotFoundException("The langauage doesn't exist with id - " + id);
 		} else {
 			languageRepository.deleteById(id);
+			System.out.println("Deleted language");
 			message = "File deleted successfully!!";
 			return new ResponseEntity<>(message, HttpStatus.OK);
 		}
@@ -70,7 +72,7 @@ public class LanguageController {
 	}
 
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
-	public String getLanguage(@PathVariable("id") Integer id) {
+	public String getLanguage(@PathVariable("id") String id) {
 		Languages languageModel = orthoappLanguageService.getLanguageById(id);
 		if (languageModel == null) {
 			throw new DataNotFoundException("The language doesn't exist with id - " + id);
@@ -88,9 +90,10 @@ public class LanguageController {
 		return languages;
 
 	}
+	//TODO
 
 	@RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<String> updateLanguage(@PathVariable("id") Integer id,
+	public ResponseEntity<String> updateLanguage(@PathVariable("id") String id,
 			@RequestParam("language") String language) {
 		String message = "";
 		Languages languageModel = orthoappLanguageService.getLanguageById(id);
