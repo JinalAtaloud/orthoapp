@@ -34,15 +34,8 @@ import software.amazon.awssdk.utils.IoUtils;
 @Component
 public class S3Util {
 
-	private static final String BUCKET = "ortho2";
+	private static final String BUCKET = "orthoapp-poc";
 	private static final String REGION = "ap-south-1";
-	private final S3Client s3Client;
-	
-	@Autowired
-	public S3Util(S3Client s3Client) {
-		super();
-		this.s3Client = s3Client;
-	}
 
 
 	public void uploadFile(String filename, InputStream inputStream)
@@ -55,9 +48,10 @@ public class S3Util {
 	
 
 	public void deleteFile(String key) {
-		DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket(BUCKET).key(key).build();
+		S3Client client = S3Client.builder().build();
+		DeleteObjectRequest request = DeleteObjectRequest.builder().bucket(BUCKET).key(key).build();
 
-		s3Client.deleteObject(deleteObjectRequest);
+		client.deleteObject(request);
 	}
 
 	
