@@ -5,12 +5,12 @@ import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventLis
 import org.springframework.data.mongodb.core.mapping.event.BeforeDeleteEvent;
 import org.springframework.stereotype.Component;
 
-import com.springboot.application.orthoapp.model.Languages;
+import com.springboot.application.orthoapp.model.Language;
 import com.springboot.application.orthoapp.repository.ImageRepository;
 import com.springboot.application.orthoapp.repository.TrainingVideosRepository;
 
 @Component
-public class DeleteListener extends AbstractMongoEventListener<Languages>{
+public class DeleteListener extends AbstractMongoEventListener<Language>{
 
 	@Autowired
 	private ImageRepository imageRepository;
@@ -26,9 +26,8 @@ public class DeleteListener extends AbstractMongoEventListener<Languages>{
 
 
 	@Override
-	public void onBeforeDelete(BeforeDeleteEvent<Languages> event) {
+	public void onBeforeDelete(BeforeDeleteEvent<Language> event) {
 		String languageId = event.getSource().get("_id").toString();
-		System.out.println("language id:{}"+languageId);
 		videoRepository.deleteByLanguageId(languageId);
 		imageRepository.deleteByLanguageId(languageId);
 	}

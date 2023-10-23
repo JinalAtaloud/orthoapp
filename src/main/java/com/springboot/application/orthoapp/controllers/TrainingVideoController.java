@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springboot.application.orthoapp.dto.LanguageRequest;
+import com.springboot.application.orthoapp.dto.VideoRequest;
 import com.springboot.application.orthoapp.exceptions.DataNotFoundException;
 import com.springboot.application.orthoapp.exceptions.UnsupportedFileFormatException;
-import com.springboot.application.orthoapp.model.Languages;
+import com.springboot.application.orthoapp.model.Language;
 import com.springboot.application.orthoapp.model.Videos;
 import com.springboot.application.orthoapp.repository.LanguageRepository;
 import com.springboot.application.orthoapp.repository.TrainingVideosRepository;
@@ -57,13 +60,16 @@ public class TrainingVideoController {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public ResponseEntity<Videos> uploadFile(@RequestParam("file") MultipartFile multipartFile,
-			@RequestParam("description") String description, @RequestParam("title") String title,@RequestParam("language_id")String language_id) throws Exception {
+	public ResponseEntity<Videos> uploadFile(@ModelAttribute VideoRequest request) throws Exception {
+		MultipartFile multipartFile = request.getFile();
+		String language_id = request.getLanguage_id();
+		String description = request.getDescription();
+		String title = request.getTitle();
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		List<String> fileTypes = new ArrayList<>();
 		fileTypes.add("video/mp4");
 		String type = multipartFile.getContentType();
-		Languages language = languageService.getLanguageById(language_id);
+		Language language = languageService.getLanguageById(language_id);
 		if(language==null) {
 			throw new DataNotFoundException("Language id doesn't exist");
 		}
@@ -99,7 +105,6 @@ public class TrainingVideoController {
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteVideo(@PathVariable("id") String id) {
 		Videos trainingVideo = orthoappService.getTrainingVideoById(id);
-		System.out.println("trainingVideo:"+trainingVideo);
 		if (trainingVideo == null) {
 			throw new DataNotFoundException("The vidoe doesn't exist with id - " + id);
 		} else {
@@ -120,7 +125,6 @@ public class TrainingVideoController {
 			
 		}
 		Videos video = orthoappService.retrieveSpecificTrainingVideo(id,language_id);
-		System.out.println("Video:{}"+video);
 		if (video == null) {
 			throw new DataNotFoundException("The video doesn't exist with id - " + id);
 		}
@@ -151,7 +155,6 @@ public class TrainingVideoController {
 			s3Util.updateFile(trainingVideo.getFileUrl(), multipartFile.getInputStream());
 			LocalDateTime lastModifiedDate = s3Util.getLastModifiedDate(trainingVideo.getFileUrl());
 			String formatDateTime = lastModifiedDate.format(format);
-			System.out.println("formatDateTime " + formatDateTime);
 			trainingVideo.setLastModifiedDate(formatDateTime);
 			orthoappService.updateTrainingVideo(trainingVideo);
 			message = "Video successfully updated";

@@ -17,14 +17,14 @@ public class Videos {
 	private String fileName;
 	
 	@DBRef
-	private Languages language;
+	private Language language;
 	
-	public Languages getLanguage() {
+	public Language getLanguage() {
 		return language;
 	}
 
 
-	public void setLanguage(Languages language) {
+	public void setLanguage(Language language) {
 		this.language = language;
 	}
 
@@ -35,7 +35,7 @@ public class Videos {
 	
 
 	public Videos(String id, String fileUrl, String title, String description, String lastModifiedDate,
-			String fileName, Languages language) {
+			String fileName, Language language) {
 		super();
 		this.id = id;
 		this.fileUrl = fileUrl;

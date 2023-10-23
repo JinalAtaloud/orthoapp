@@ -5,14 +5,14 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.springboot.application.orthoapp.model.Languages;
+import com.springboot.application.orthoapp.model.Language;
 import com.springboot.application.orthoapp.model.Videos;
 
 @Repository
 public interface TrainingVideosRepository extends MongoRepository<Videos, String> {
 
 	Videos findByFileName(String fileName);
-	List<Languages> findByLanguageId(String languageId);
+	List<Language> findByLanguageId(String languageId);
 	void deleteByLanguageId(String languageId);
 	
 	//TODO

@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.springboot.application.orthoapp.exceptions.DataNotFoundException;
 import com.springboot.application.orthoapp.exceptions.UnsupportedFileFormatException;
 import com.springboot.application.orthoapp.model.Images;
-import com.springboot.application.orthoapp.model.Languages;
+import com.springboot.application.orthoapp.model.Language;
 import com.springboot.application.orthoapp.repository.ImageRepository;
 import com.springboot.application.orthoapp.repository.LanguageRepository;
 import com.springboot.application.orthoapp.s3util.S3Util;
@@ -60,7 +60,7 @@ public class ImageController {
 					"File format is not supported - " + multipartFile.getContentType());
 		}
 		
-		Languages language = languageService.getLanguageById(language_id);
+		Language language = languageService.getLanguageById(language_id);
 		if(language==null) {
 			throw new DataNotFoundException("Language id doesn't exist");
 		}

@@ -14,7 +14,7 @@ public class Images {
 	private String fileName;
 	
 	@DBRef
-	private Languages language;
+	private Language language;
 	
 	
 	public Images() {
@@ -22,7 +22,7 @@ public class Images {
 	}
 
 
-	public Images(String id, String fileUrl, String fileName, Languages language) {
+	public Images(String id, String fileUrl, String fileName, Language language) {
 		super();
 		this.id = id;
 		this.fileUrl = fileUrl;
@@ -54,12 +54,12 @@ public class Images {
 
 	
 
-	public Languages getLanguage() {
+	public Language getLanguage() {
 		return language;
 	}
 
 
-	public void setLanguage(Languages language) {
+	public void setLanguage(Language language) {
 		this.language = language;
 	}
 

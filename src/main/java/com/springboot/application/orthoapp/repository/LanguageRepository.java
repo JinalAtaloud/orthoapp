@@ -5,12 +5,12 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.springboot.application.orthoapp.model.Languages;
+import com.springboot.application.orthoapp.model.Language;
 
 @Repository
-public interface LanguageRepository extends MongoRepository<Languages, String> {
+public interface LanguageRepository extends MongoRepository<Language, String> {
 	
-	Languages findByLanguage(String language);
+	Language findByLanguage(String language);
 
 
 

@@ -68,9 +68,6 @@ public class S3Util {
 	}
 
 	public LocalDateTime getLastModifiedDate(String filename) {
-		System.out.println("Inside glmd");
-		
-
 		S3Client client = S3Client.builder().build();
 		LocalDateTime ldt = null;
 
@@ -84,7 +81,6 @@ public class S3Util {
 				Instant lastModifiedDate =object.lastModified();
 			
 				ldt = LocalDateTime.ofInstant(lastModifiedDate, ZoneOffset.UTC);
-				System.out.println("Ildt:{}"+ldt);
 			}
 		}
 		

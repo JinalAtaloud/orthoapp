@@ -38,7 +38,6 @@ public class ApplicationConfig {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 		authProvider.setUserDetailsService(userDetailsService());
 		authProvider.setPasswordEncoder(passwordEncoder());
-		System.out.println("Inside authentication provider");
 		return authProvider;
 	}
 

@@ -58,7 +58,6 @@ public class AuthenticationService {
 
 		var jwtToken = jwtService.generateToken(user);
 		//var refreshToken = jwtService.generateRefreshToken(user);
-		System.out.println("Before calling revoke");
 		revokeAllUserTokens(user);
 		saveUserToken(user, jwtToken);
 		return AuthenticationResponse.builder()
@@ -67,7 +66,6 @@ public class AuthenticationService {
 	}
 	
 	private void revokeAllUserTokens(User user) {
-		System.out.println("Inside revoke");
 		var validUserToken = tokenRepository.findAllValidTokenByUser(user.getId());
 		if(validUserToken.isEmpty()) {
 			return;
